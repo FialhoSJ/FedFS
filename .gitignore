@@ -8,9 +8,6 @@ stats/
 plots/*.png
 ffs-env/
 
-# Dataset (too large for GitHub, download separately)
-data/
-
 # MacOS
 .DS_Store
 .vscode/
