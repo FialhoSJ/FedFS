@@ -1,0 +1,6 @@
+numpy>=1.19
+pandas>=1.3
+scikit-learn>=0.24
+scipy>=1.7
+joblib>=1.0
+pymit @ git+https://github.com/tud-zih-energy/pymit.git

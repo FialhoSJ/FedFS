@@ -1,4 +1,4 @@
-from pathlib import Path
+from operator import sub
 import pandas as pd
 import sklearn as skl
 import pickle as pkl
@@ -6,11 +6,9 @@ import numpy as np
 from datetime import datetime 
 import random as rnd
 
-_DATA_DIR = Path(__file__).resolve().parent.parent / 'data'
-
 def load_voxel(return_Xy=False):
-    csv_path = _DATA_DIR / 'voxel' / 'DataStruct.csv'
-    raw_data = pd.read_csv(csv_path, delimiter=' ')
+    raw_data = pd.read_csv(
+        "../data/voxel/DataStruct.csv", delimiter=' ')
     if return_Xy:
         # separate patterns and labels
 
@@ -137,4 +135,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

@@ -17,10 +17,15 @@ def normaliseArray(inVec):
 
 
 
-def merge_arrays_fast(firstVec, numStateFirst, secondVec, numStateSecond):
-    baseidx = firstVec + secondVec * numStateFirst
-    _, inverse = np.unique(baseidx, return_inverse=True)
-    return [inverse.astype(np.uint32) + 1, int(inverse.max()) + 2]
+def merge_arrays_fast(firstVec,numStateFirst,secondVec, numStateSecond):
+    """
+    Fast version of merge arrays 
+    """
+    baseidx=firstVec+(secondVec*numStateFirst)
+    upos= np.sort(np.unique(baseidx,return_index=True)[1])
+    dic=dict(zip(baseidx[upos],np.arange(len(upos))+1))
+
+    return [np.array([dic.get(baseidx[id]) for id in np.arange(len(baseidx))]),len(upos)+1]
 
 def merge_arrays(firstVec,numStateFirst,secondVec, numStateSecond):
     """
@@ -58,21 +63,32 @@ def disc_and_merge_arrays(firstVec,secondVec):
 
 
 
-def merge_multiple_arrays(inMat: np.array):
+def merge_multiple_arrays(inMat:np.array):
+    """ 
+    Computes the joint state space vector of an arbitrary number column vectors.  
+    """
+
+    curNumStates=0
     vecLength, numFeat = inMat.shape
 
-    if numFeat == 0:
-        return [np.zeros(vecLength, dtype=np.uint32), 1]
+    
 
-    first_norm, numStates = normaliseArray(inMat[:, 0])
-    outVec = first_norm
-    curNumStates = numStates
+    if (numFeat>2):
+        outVec,curNumStates = disc_and_merge_arrays(inMat[:,0],inMat[:,1])
+        
+        for i in np.arange(2,numFeat):
+            normVec,secNumStates=normaliseArray(inMat[:,i])
+            outVec,curNumStates = merge_arrays_fast(outVec,curNumStates,normVec,secNumStates)
 
-    for i in range(1, numFeat):
-        normVec, secNumStates = normaliseArray(inMat[:, i])
-        outVec, curNumStates = merge_arrays_fast(outVec, curNumStates, normVec, secNumStates)
+            del normVec
+    elif (numFeat==2):
+        outVec,curNumStates = disc_and_merge_arrays(inMat[:,0],inMat[:,1])
+    else:
+        outVec,curNumStates = normaliseArray(inMat[:,0])
+        
 
-    return [outVec, curNumStates]
+
+    return [outVec,curNumStates]
 
 
 def condH(X, Y):
